@@ -21,7 +21,7 @@ interface ITable {
 
 
 const ReservationPage: React.FC = () => {
-    const [tables, setTables] = useState<ITable[] | null>(null);
+    const [tables, setTables] = useState<ITable[]>([]);
 
     useEffect(() => {
         const fetchTables = async () => {
@@ -42,16 +42,31 @@ const ReservationPage: React.FC = () => {
         fetchTables();
     },[]);
 
-    return (
-        <>
-        <Header isAuth={true}/>
-        <Flex padding="4" alignItems="center" justifyContent="center" className="bg-coffee-light">
-            <Box flex="2" margin="4" className="rounded-lg shadow-lg bg-white">
-                <InteractiveTableMap tables={tables} />
-            </Box>
-        </Flex>
-        </>
-    )
+    if(tables?.length > 0) {
+        return (
+            <>
+            <Header isAuth={true}/>
+            <Flex padding="4" alignItems="center" justifyContent="center" className="bg-coffee-light">
+                <Box flex="2" margin="4" className="rounded-lg shadow-lg bg-white">
+                    <InteractiveTableMap tables={tables} />
+                </Box>
+            </Flex>
+            </>
+        )
+    } else {
+        return (
+            <>
+            <Header isAuth={true}/>
+            <Flex padding="4" alignItems="center" justifyContent="center" className="bg-coffee-light">
+                Извините, но на данный момент столов нет
+            </Flex>
+            </>
+        )
+    }
+
+    
+
+    
 }
 
 export default ReservationPage;
