@@ -1,11 +1,12 @@
 'use client'
-import React from 'react';
+import React, { useState } from 'react';
 import {Formik, Form, Field, ErrorMessage, FormikHelpers} from 'formik';
 import * as Yup from 'yup';
-import {Box, Button, FormControl, FormLabel, Input, FormErrorMessage, Container} from '@chakra-ui/react';
-import axios from 'axios';
+import {Box, Button, FormControl, FormLabel, Input, FormErrorMessage, Container, Alert, AlertIcon} from '@chakra-ui/react';
+import axios, { AxiosError } from 'axios';
 import { API_URL } from '@/utils/constants';
 import { useRouter } from 'next/navigation';
+import { setDefaultResultOrder } from 'dns';
 
 // Схема валидации с помощью Yup
 const validationSchema = Yup.object({
@@ -24,8 +25,12 @@ interface RegisterFormValues {
     repeatPassword: string;
 }
 
-const RegistrationPage: React.FC = () => {
+interface IAxiosError {
+    error: string;
+}
 
+const RegistrationPage: React.FC = () => {
+    const [error, setError] = useState<string | undefined>(undefined);
     const router = useRouter()
 
     const handleRegister = async (values: RegisterFormValues, actions: FormikHelpers<RegisterFormValues>) => {
@@ -35,12 +40,16 @@ const RegistrationPage: React.FC = () => {
                     'Content-Type': 'application/json'
                 }
             });
-            console.log(response.data);
+            
+
             if (response.status === 200) {
                 router.push('/login');
+                setError(undefined);
             }
             actions.setSubmitting(false);
         } catch (err) {
+            const e = err as AxiosError<IAxiosError>;
+            setError(e?.response?.data?.error);
             actions.setSubmitting(false);
         }
     }
@@ -50,6 +59,13 @@ const RegistrationPage: React.FC = () => {
         <Container>
             <h1 className={"text-center font-medium text-2xl"}>Регистрация</h1>
             <Box p={6} borderRadius="md" w="full" maxW="lg">
+            {error && (
+                    <Alert status="error" mb={4}>
+                        <AlertIcon />
+                        {error}
+                    </Alert>
+                )}
+
                 <Formik
                     initialValues={{login: '', email: '', password: '', repeatPassword: ''}}
                     validationSchema={validationSchema}
