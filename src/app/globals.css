@@ -25,3 +25,16 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+.header {
+  @apply text-white;
+  @apply shadow-lg;
+}
+
+.logo {
+  @apply mr-2;
+}
+
+.nav-button {
+  @apply ml-4 first:ml-0;
+}
